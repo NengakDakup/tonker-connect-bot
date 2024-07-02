@@ -9,7 +9,7 @@ import { addTGReturnStrategy, buildUniversalKeyboard, pTimeout, pTimeoutExceptio
 let newConnectRequestListenersMap = new Map<number, () => void>();
 
 export async function handleConnectCommand(msg: TelegramBot.Message): Promise<void> {
-    const chatId = msg.chat.id;
+    const chatId = msg.from?.id || msg.chat.id;
     let messageWasDeleted = false;
 
     newConnectRequestListenersMap.get(chatId)?.();
@@ -79,7 +79,7 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
 
 
 export async function handleDisconnectCommand(msg: TelegramBot.Message): Promise<void> {
-    const chatId = msg.chat.id;
+    const chatId = msg.from?.id || msg.chat.id;
 
     const connector = getConnector(chatId);
 
@@ -95,7 +95,7 @@ export async function handleDisconnectCommand(msg: TelegramBot.Message): Promise
 }
 
 export async function handleShowMyWalletCommand(msg: TelegramBot.Message): Promise<void> {
-    const chatId = msg.chat.id;
+    const chatId = msg.from?.id || msg.chat.id;
 
     const connector = getConnector(chatId);
 

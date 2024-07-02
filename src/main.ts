@@ -9,9 +9,10 @@ import {
     handleShowMyWalletCommand
 } from './command-handlers';
 import TelegramBot from 'node-telegram-bot-api';
+import { initMongoDB } from './ton-connect/storage';
 
 async function main(): Promise<void> {
-    
+    await initMongoDB()
 
     const callbacks = {
         ...walletMenuCallbacks
