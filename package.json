@@ -3,11 +3,13 @@
     "version": "1.0.0",
     "scripts": {
         "compile": "npx rimraf dist && tsc",
-        "start": "node ./dist/main.js"
+        "start": "forever start ./dist/main.js",
+        "serve": "npm run compile && npm run start"
     },
     "dependencies": {
         "@tonconnect/sdk": "^3.0.0-beta.1",
         "dotenv": "^16.0.3",
+        "forever": "^4.0.3",
         "mongoose": "^8.4.4",
         "node-telegram-bot-api": "^0.61.0",
         "qrcode": "^1.5.1"
