@@ -2,29 +2,60 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { bot } from './bot';
-import { getWallets } from './ton-connect/wallet';
-import QRCode from 'qrcode';
-import { getConnector } from './ton-connect/connector';
+import { walletMenuCallbacks } from './connect-wallet-menu';
+import {
+    handleConnectCommand,
+    handleDisconnectCommand,
+    handleShowMyWalletCommand
+} from './command-handlers';
+import TelegramBot from 'node-telegram-bot-api';
 
-bot.onText(/\/connect/, async msg => {
-    const chatId = msg.chat.id;
-    const wallets = await getWallets();
+async function main(): Promise<void> {
+    
 
-    const connector = getConnector(chatId);
+    const callbacks = {
+        ...walletMenuCallbacks
+    };
 
-    connector.onStatusChange(wallet => {
-        if (wallet) {
-            bot.sendMessage(chatId, `${wallet.device.appName} wallet connected!`);
+    bot.on('callback_query', query => {
+        if (!query.data) {
+            return;
         }
+
+        let request: { method: string; data: string };
+
+        try {
+            request = JSON.parse(query.data);
+        } catch {
+            return;
+        }
+
+        if (!callbacks[request.method as keyof typeof callbacks]) {
+            return;
+        }
+
+        callbacks[request.method as keyof typeof callbacks](query, request.data);
     });
 
-    const tonkeeper = wallets.find(wallet => wallet.appName === 'tonkeeper')!;
+    bot.onText(/\/connect/, handleConnectCommand);
 
-    const link = connector.connect({
-        bridgeUrl: tonkeeper.bridgeUrl,
-        universalLink: tonkeeper.universalLink
+    bot.onText(/\/disconnect/, handleDisconnectCommand);
+
+    bot.onText(/\/wallet/, handleShowMyWalletCommand);
+
+    bot.onText(/\/start/, (msg: TelegramBot.Message) => {
+        bot.sendMessage(
+            msg.chat.id,
+            `
+This is the Tonker Game Connect Wallet Bot.
+            
+Commands list: 
+/connect - Connect to a wallet
+/wallet - Show connected wallet
+/disconnect - Disconnect from the wallet
+`
+        );
     });
-    const image = await QRCode.toBuffer(link);
+}
 
-    await bot.sendPhoto(chatId, image);
-});
+main();
