@@ -29,7 +29,7 @@ export class TonConnectStorage implements IStorage {
   }
 
   async setItem(key: string, value: string): Promise<void> {
-    await Connection.updateOne({ key: this.getKey(key) }, { key: this.getKey(key), value }, { upsert: true });
+    await Connection.updateOne({ key: this.getKey(key) }, { key: this.getKey(key), value, chatId: this.chatId }, { upsert: true });
   }
 
   async getItem(key: string): Promise<string | null> {

@@ -43,6 +43,7 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
             const walletName =
                 (await getWalletInfo(wallet.device.appName))?.name || wallet.device.appName;
             await bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
+            // send transaction to check the balance of token for connected wallet
             unsubscribe();
             newConnectRequestListenersMap.delete(chatId);
         }
