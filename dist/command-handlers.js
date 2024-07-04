@@ -62,7 +62,10 @@ function handleConnectCommand(msg) {
                         username: username,
                         userid: chatId,
                         wallet: wallet.account.address,
-                        games: [],
+                        games: [{
+                                queryid: msg.chat.id,
+                                score: 0
+                            }],
                         total_score: 0,
                         highest_score: 0
                     });
