@@ -33,7 +33,6 @@ const UserSchema = new Schema({
             queryid: {
                 type: String,
                 required: true,
-                unique: true
             },
             score: {
                 type: Number,
