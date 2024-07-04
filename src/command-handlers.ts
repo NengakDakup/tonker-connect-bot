@@ -43,7 +43,10 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
 
             const walletName =
                 (await getWalletInfo(wallet.device.appName))?.name || wallet.device.appName;
-            await bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
+            await bot.sendMessage(chatId, `
+                ${walletName} wallet connected successfully
+                Return to the game to start playing @Tonker01_bot
+                `);
             // create or update the User Model with the new wallet address
             let user = await User.findOne({userid: chatId})
             if(user){
