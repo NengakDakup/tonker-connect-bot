@@ -1,11 +1,10 @@
-import { CHAIN, isTelegramUrl, toUserFriendlyAddress, UserRejectsError } from '@tonconnect/sdk';
+import { CHAIN, toUserFriendlyAddress } from '@tonconnect/sdk';
 import { bot } from './bot';
 import { getWallets, getWalletInfo } from './ton-connect/wallet';
 import QRCode from 'qrcode';
 import TelegramBot from 'node-telegram-bot-api';
 import { getConnector } from './ton-connect/connector';
-import { addTGReturnStrategy, buildUniversalKeyboard, CheckTokenBalance, pTimeout, pTimeoutException } from './utils';
-import Connection from './models/Connection';
+import { buildUniversalKeyboard } from './utils';
 import User from './models/User';
 
 let newConnectRequestListenersMap = new Map<number, () => void>();
@@ -48,8 +47,10 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
             // create or update the User Model with the new wallet address
             let user = await User.findOne({userid: chatId})
             if(user){
-                user.wallet = wallet.account.address
-                await user.save()
+                if(user.wallet !== wallet.account.address){
+                    user.wallet = wallet.account.address
+                    await user.save()
+                }
             } else {
                 let username = msg.from?.username? msg.from.username : (msg.from?.last_name? `${msg.from.first_name}${msg.from.last_name}` : msg.from?.first_name ) 
                 let newUser = new User({
