@@ -60,7 +60,6 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
                     username: username,
                     userid: chatId,
                     wallet: wallet.account.address,
-                    games: [],
                     total_score: 0,
                     highest_score: 0
                 })
