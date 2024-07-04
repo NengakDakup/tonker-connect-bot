@@ -6,6 +6,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { getConnector } from './ton-connect/connector';
 import { addTGReturnStrategy, buildUniversalKeyboard, CheckTokenBalance, pTimeout, pTimeoutException } from './utils';
 import Connection from './models/Connection';
+import User from './models/User';
 
 let newConnectRequestListenersMap = new Map<number, () => void>();
 
@@ -44,8 +45,23 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
             const walletName =
                 (await getWalletInfo(wallet.device.appName))?.name || wallet.device.appName;
             await bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
-            // send transaction to check the balance of token for connected wallet
-            
+            // create or update the User Model with the new wallet address
+            let user = await User.findOne({userid: chatId})
+            if(user){
+                user.wallet = wallet.account.address
+                await user.save()
+            } else {
+                let username = msg.from?.username? msg.from.username : (msg.from?.last_name? `${msg.from.first_name}${msg.from.last_name}` : msg.from?.first_name ) 
+                let newUser = new User({
+                    username: username,
+                    userid: chatId,
+                    wallet: wallet.account.address,
+                    games: [],
+                    total_score: 0,
+                    highest_score: 0
+                })
+                await newUser.save()
+            }
             
             unsubscribe();
             newConnectRequestListenersMap.delete(chatId);

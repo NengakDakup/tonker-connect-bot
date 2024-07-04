@@ -19,7 +19,7 @@ const wallet_1 = require("./ton-connect/wallet");
 const qrcode_1 = __importDefault(require("qrcode"));
 const connector_1 = require("./ton-connect/connector");
 const utils_1 = require("./utils");
-const Connection_1 = __importDefault(require("./models/Connection"));
+const User_1 = __importDefault(require("./models/User"));
 let newConnectRequestListenersMap = new Map();
 function handleConnectCommand(msg) {
     var _a, _b, _c;
@@ -40,14 +40,29 @@ function handleConnectCommand(msg) {
             return;
         }
         const unsubscribe = connector.onStatusChange((wallet) => __awaiter(this, void 0, void 0, function* () {
-            var _d;
+            var _d, _e, _f, _g;
             if (wallet) {
                 yield deleteMessage();
                 const walletName = ((_d = (yield (0, wallet_1.getWalletInfo)(wallet.device.appName))) === null || _d === void 0 ? void 0 : _d.name) || wallet.device.appName;
                 yield bot_1.bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
-                // send transaction to check the balance of token for connected wallet
-                let balance = yield (0, utils_1.CheckTokenBalance)(wallet.account.address);
-                yield Connection_1.default.updateMany({ chatId: chatId }, { balance: balance }, { upsert: true });
+                // create or update the User Model with the new wallet address
+                let user = yield User_1.default.findOne({ userid: chatId });
+                if (user) {
+                    user.wallet = wallet.account.address;
+                    yield user.save();
+                }
+                else {
+                    let username = ((_e = msg.from) === null || _e === void 0 ? void 0 : _e.username) ? msg.from.username : (((_f = msg.from) === null || _f === void 0 ? void 0 : _f.last_name) ? `${msg.from.first_name}${msg.from.last_name}` : (_g = msg.from) === null || _g === void 0 ? void 0 : _g.first_name);
+                    let newUser = new User_1.default({
+                        username: username,
+                        userid: chatId,
+                        wallet: wallet.account.address,
+                        games: [],
+                        total_score: 0,
+                        highest_score: 0
+                    });
+                    yield newUser.save();
+                }
                 unsubscribe();
                 newConnectRequestListenersMap.delete(chatId);
             }
