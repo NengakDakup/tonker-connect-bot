@@ -45,8 +45,8 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
                 (await getWalletInfo(wallet.device.appName))?.name || wallet.device.appName;
             await bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
             // send transaction to check the balance of token for connected wallet
-            let balance = await CheckTokenBalance(wallet.account.address)
-            await Connection.updateMany({ chatId: chatId }, { balance: balance }, { upsert: true })
+            
+            
             unsubscribe();
             newConnectRequestListenersMap.delete(chatId);
         }
