@@ -6,3 +6,4 @@ export declare function pTimeout<T>(promise: Promise<T>, time: number, exception
 export declare function addTGReturnStrategy(link: string, strategy: string): string;
 export declare function convertDeeplinkToUniversalLink(link: string, walletUniversalLink: string): string;
 export declare function buildUniversalKeyboard(link: string, wallets: WalletInfoRemote[]): Promise<InlineKeyboardButton[]>;
+export declare function CheckTokenBalance(walletAddress: string): Promise<number>;

@@ -8,6 +8,7 @@ const connectionSchema = new mongoose_1.default.Schema({
     key: { type: String, required: true },
     value: { type: String, required: true },
     chatId: { type: String, required: true },
+    balance: { type: Number },
 });
 exports.default = mongoose_1.default.model('Connection', connectionSchema);
 //# sourceMappingURL=Connection.js.map

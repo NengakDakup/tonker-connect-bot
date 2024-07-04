@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "compile": "npx rimraf dist && tsc",
-        "start": "forever start ./dist/main.js",
+        "start": "node ./dist/main.js",
         "serve": "npm run compile && npm run start"
     },
     "dependencies": {
@@ -11,6 +11,7 @@
         "dotenv": "^16.0.3",
         "forever": "^4.0.3",
         "mongoose": "^8.4.4",
+        "node-fetch": "^3.3.2",
         "node-telegram-bot-api": "^0.61.0",
         "qrcode": "^1.5.1"
     },

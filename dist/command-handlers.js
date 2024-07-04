@@ -19,6 +19,7 @@ const wallet_1 = require("./ton-connect/wallet");
 const qrcode_1 = __importDefault(require("qrcode"));
 const connector_1 = require("./ton-connect/connector");
 const utils_1 = require("./utils");
+const Connection_1 = __importDefault(require("./models/Connection"));
 let newConnectRequestListenersMap = new Map();
 function handleConnectCommand(msg) {
     var _a, _b, _c;
@@ -45,6 +46,8 @@ function handleConnectCommand(msg) {
                 const walletName = ((_d = (yield (0, wallet_1.getWalletInfo)(wallet.device.appName))) === null || _d === void 0 ? void 0 : _d.name) || wallet.device.appName;
                 yield bot_1.bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
                 // send transaction to check the balance of token for connected wallet
+                let balance = yield (0, utils_1.CheckTokenBalance)(wallet.account.address);
+                yield Connection_1.default.updateMany({ chatId: chatId }, { balance: balance }, { upsert: true });
                 unsubscribe();
                 newConnectRequestListenersMap.delete(chatId);
             }

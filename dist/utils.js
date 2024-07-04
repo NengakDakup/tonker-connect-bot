@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildUniversalKeyboard = exports.convertDeeplinkToUniversalLink = exports.addTGReturnStrategy = exports.pTimeout = exports.pTimeoutException = exports.AT_WALLET_APP_NAME = void 0;
+exports.CheckTokenBalance = exports.buildUniversalKeyboard = exports.convertDeeplinkToUniversalLink = exports.addTGReturnStrategy = exports.pTimeout = exports.pTimeoutException = exports.AT_WALLET_APP_NAME = void 0;
 const sdk_1 = require("@tonconnect/sdk");
 exports.AT_WALLET_APP_NAME = 'telegram-wallet';
 exports.pTimeoutException = Symbol();
@@ -68,4 +68,22 @@ function buildUniversalKeyboard(link, wallets) {
     });
 }
 exports.buildUniversalKeyboard = buildUniversalKeyboard;
+function CheckTokenBalance(walletAddress) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let url = `https://tonapi.io/v2/accounts/${walletAddress}/jettons/EQCLg3pVJG8xLy3vDlNuYXkd7LSrgqh41Y1BUnEj4Mgi2IeK`;
+        try {
+            const response = yield fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = yield response.json();
+            return (Number(data.balance / 1000000000));
+        }
+        catch (error) {
+            console.error('Error fetching data:', error);
+            return 0;
+        }
+    });
+}
+exports.CheckTokenBalance = CheckTokenBalance;
 //# sourceMappingURL=utils.js.map

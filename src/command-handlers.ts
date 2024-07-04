@@ -4,7 +4,8 @@ import { getWallets, getWalletInfo } from './ton-connect/wallet';
 import QRCode from 'qrcode';
 import TelegramBot from 'node-telegram-bot-api';
 import { getConnector } from './ton-connect/connector';
-import { addTGReturnStrategy, buildUniversalKeyboard, pTimeout, pTimeoutException } from './utils';
+import { addTGReturnStrategy, buildUniversalKeyboard, CheckTokenBalance, pTimeout, pTimeoutException } from './utils';
+import Connection from './models/Connection';
 
 let newConnectRequestListenersMap = new Map<number, () => void>();
 
@@ -44,6 +45,8 @@ export async function handleConnectCommand(msg: TelegramBot.Message): Promise<vo
                 (await getWalletInfo(wallet.device.appName))?.name || wallet.device.appName;
             await bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
             // send transaction to check the balance of token for connected wallet
+            let balance = await CheckTokenBalance(wallet.account.address)
+            await Connection.updateMany({ chatId: chatId }, { balance: balance }, { upsert: true })
             unsubscribe();
             newConnectRequestListenersMap.delete(chatId);
         }

@@ -72,3 +72,22 @@ export async function buildUniversalKeyboard(
 
     return keyboard;
 }
+
+export async function CheckTokenBalance(walletAddress: string): Promise<number> {
+    let url = `https://tonapi.io/v2/accounts/${walletAddress}/jettons/EQCLg3pVJG8xLy3vDlNuYXkd7LSrgqh41Y1BUnEj4Mgi2IeK`;
+    
+    try {
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return (Number(data.balance/1000000000));
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return 0;
+    }
+
+}
