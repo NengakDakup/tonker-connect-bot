@@ -44,12 +44,17 @@ function handleConnectCommand(msg) {
             if (wallet) {
                 yield deleteMessage();
                 const walletName = ((_d = (yield (0, wallet_1.getWalletInfo)(wallet.device.appName))) === null || _d === void 0 ? void 0 : _d.name) || wallet.device.appName;
-                yield bot_1.bot.sendMessage(chatId, `${walletName} wallet connected successfully`);
+                yield bot_1.bot.sendMessage(chatId, `
+                ${walletName} wallet connected successfully
+                Return to the game to start playing @Tonker01_bot
+                `);
                 // create or update the User Model with the new wallet address
                 let user = yield User_1.default.findOne({ userid: chatId });
                 if (user) {
-                    user.wallet = wallet.account.address;
-                    yield user.save();
+                    if (user.wallet !== wallet.account.address) {
+                        user.wallet = wallet.account.address;
+                        yield user.save();
+                    }
                 }
                 else {
                     let username = ((_e = msg.from) === null || _e === void 0 ? void 0 : _e.username) ? msg.from.username : (((_f = msg.from) === null || _f === void 0 ? void 0 : _f.last_name) ? `${msg.from.first_name}${msg.from.last_name}` : (_g = msg.from) === null || _g === void 0 ? void 0 : _g.first_name);
